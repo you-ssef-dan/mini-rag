@@ -21,5 +21,5 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # Include your routes as usual
-app.include_router(base.router)
-app.include_router(data.router)
+app.include_router(base.base_router)
+app.include_router(data.data_router)
