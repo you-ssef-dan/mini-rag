@@ -23,7 +23,7 @@ data_router = APIRouter(
 async def upload_data(request: Request, project_id: str, file : UploadFile,
                        app_settings: Settings = Depends(get_settings)):
     
-    project_model = ProjectModel(
+    project_model = await ProjectModel.create_instance(
         db_client=request.app.db_client
         )
     
@@ -71,7 +71,7 @@ async def upload_data(request: Request, project_id: str, file : UploadFile,
     return JSONResponse(
         content={
         "project_id": project_id,
-        "data_base_project_id": str(project._id),
+        "data_base_project_id": str(project.id),
         "file_name": file.filename,
         "file_id": file_id,
         "validation_status": is_valid,
@@ -88,20 +88,12 @@ async def process_endpoint(request: Request, project_id: str, process_request: P
     overlap_size = process_request.overlap_size
     do_reset = process_request.do_reset
 
-    project_model = ProjectModel(
+    project_model = await ProjectModel.create_instance(
         db_client=request.app.db_client
         )
     
     project = await project_model.get_project_or_create_one(
         project_id=project_id
-        )
-    chunk_model = ChunkModel(
-        db_client=request.app.db_client
-    )
-    
-    if do_reset:
-        chunk_model.delete_chunks_by_project_id(
-            project_id=project.id
         )
 
     process_controller = ProcessController(project_id=project_id)
@@ -131,7 +123,7 @@ async def process_endpoint(request: Request, project_id: str, process_request: P
         for i, chunk in enumerate(file_chunks)
     ]
 
-    chunk_model = ChunkModel(
+    chunk_model = await ChunkModel.create_instance(
         db_client=request.app.db_client
     )
     
