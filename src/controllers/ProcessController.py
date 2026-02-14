@@ -21,9 +21,13 @@ class ProcessController(BaseController):
         file_ext = self.get_file_extension(file_id=file_id)
 
         file_path = os.path.join(self.project_path, file_id)
+        
+        if not os.path.exists(file_path):
+            return None
 
         if file_ext == ProcessingEnum.TEXT.value:
             return TextLoader(file_path, encoding="utf-8")
+        
         if file_ext == ProcessingEnum.PDF.value:
             return PyMuPDFLoader(file_path)
         
@@ -32,7 +36,7 @@ class ProcessController(BaseController):
         
         # FIX 1: Guard clause preventing crash on unsupported files
         if not loader:
-            raise ValueError(f"Unsupported file type for file: {file_id}")
+            return None
             
         return loader.load()
         
