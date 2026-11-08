@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     INPUT_DAFAULT_MAX_CHARACTERS: int = None
     GENERATION_DAFAULT_MAX_TOKENS: int = None
     GENERATION_DAFAULT_TEMPERATURE: float = None  
+
+    VECTOR_DB_BACKEND : str
+    VECTOR_DB_PATH : str
+    VECTOR_DB_DISTANCE_METHOD: str = None
     
     # In Pydantic V2, we use model_config instead of class Config
     model_config = SettingsConfigDict(env_file=".env")
