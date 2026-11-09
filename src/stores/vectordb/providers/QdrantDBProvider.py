@@ -4,6 +4,7 @@ from ..VectorDBEnums import DistanceMethodEnums
 import logging
 import uuid
 from typing import List
+from models.db_schemes import RetrievedDocument
 
 class QdrantDBProvider(VectorDBInterface):
 
@@ -139,4 +140,16 @@ class QdrantDBProvider(VectorDBInterface):
         )
 
         # same shape as the old client.search(): a list of scored points
-        return response.points
+        results = response.points
+
+        if not results or len(results) == 0:
+            self.logger.error(f"No results found for the given vector in collection: {collection_name}")
+            return None
+
+        return [
+            RetrievedDocument(**{
+                "text": point.payload["text"],
+                "score": point.score
+            })
+            for point in results
+        ]
